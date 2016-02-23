@@ -1,11 +1,8 @@
 module Main where
 
-import Control.Monad
-import Control.Applicative
 import Core
 import Types
 import Control.Monad.Writer.Lazy
-import qualified Data.Map as M
     
 main :: IO ()
 main =
@@ -25,8 +22,8 @@ main =
                  mov (Reg AX) (Imm 0)
                  add (Reg AX) (Imm 10)
                  sub (Reg AX) (Imm 100)
+          mkFunc "testFunc1" $ do
+                 mov (Reg EAX) (Imm 0)
+                 label "testLabel"
     in
       (mapM_ putStrLn) . output . snd . runWriter . produceAsm $ masm
-         
-
-         
