@@ -23,7 +23,13 @@ main =
                  add (Reg AX) (Imm 10)
                  sub (Reg AX) (Imm 100)
           mkFunc "testFunc1" $ do
-                 mov (Reg EAX) (Imm 0)
+                 let loop n = if n > 0
+                              then do
+                                mov (Reg EAX) (Imm n)
+                                loop (n - 1)
+                              else
+                                  return ()
+                 loop 100
                  label "testLabel"
     in
       (mapM_ putStrLn) . output . snd . runWriter . produceAsm $ masm
