@@ -33,6 +33,7 @@ output :: [MASMOutput] -> [String]
 output x = let output' :: Int -> [MASMOutput] -> [String]
                output' indent (y:ys) = case y of
                                          MASMOutput str -> (replicate indent ' ') <> str : output' indent ys
+                                         MASMOutputNoIndent str -> str : output' indent ys
                                          Indent -> output' (indent + 4) ys
                                          Dedent -> case indent - 4 >= 0 of
                                                      True -> output' (indent - 4) ys
@@ -105,7 +106,7 @@ printShowableInstr instr = let binOp m x y = stell $ MASMOutput $ m <> " " <> sh
                                 MASMMov x y -> binOp "MOV" x y
                                 MASMFuncCall name convention _ -> error "func call not implemented"
                                 MASMGoto x -> sinOp "GOTO" x
-                                MASMLabel x -> stell $ MASMOutput $ x <> ":"
+                                MASMLabel x -> stell $ MASMOutputNoIndent $ x <> ":"
 
 modFun :: MASMInstr -> MASMFuncM ()
 modFun x = modify (\f -> let i = instrs f

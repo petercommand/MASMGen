@@ -80,4 +80,4 @@ data MASMProg = MASMProg { globalVarMap :: MASMVarMap
                          , funcs :: [MASMTopLevel]
                          }
 
-data MASMOutput = MASMOutput String | Indent | Dedent | NewLine
+data MASMOutput = MASMOutput String | MASMOutputNoIndent String | Indent | Dedent | NewLine
