@@ -65,6 +65,8 @@ data MASMInstr = MASMAdd Operand Operand
                | MASMMov Operand Operand
                | MASMInc Operand
                | MASMDec Operand
+               | MASMPush Operand
+               | MASMPop Operand
                | MASMFuncCall String CallingConvention [FuncArg]
                | MASMGoto String
                | MASMLabel String

@@ -107,6 +107,8 @@ printShowableInstr instr = let binOp m x y = stell $ MASMOutput $ m <> " " <> sh
                                 MASMFuncCall name convention _ -> error "func call not implemented"
                                 MASMGoto x -> sinOp "GOTO" x
                                 MASMLabel x -> stell $ MASMOutputNoIndent $ x <> ":"
+                                MASMPush x -> sinOp "PUSH" x
+                                MASMPop x -> sinOp "POP" x
 
 modFun :: MASMInstr -> MASMFuncM ()
 modFun x = modify (\f -> let i = instrs f
