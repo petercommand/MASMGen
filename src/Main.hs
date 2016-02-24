@@ -30,6 +30,7 @@ main =
                               else
                                   return ()
                  loop 20000
+                 comment "this is a comment"
                  label "testLabel"
     in
       (mapM_ putStrLn) . output . snd . runWriter . produceAsm $ masm
