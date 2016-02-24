@@ -29,7 +29,7 @@ main =
                                 loop (n - 1)
                               else
                                   return ()
-                 loop 20000
+                 loop 20
                  comment "this is a comment"
                  label "testLabel"
     in
