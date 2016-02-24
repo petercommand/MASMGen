@@ -54,7 +54,12 @@ instance Reg Reg8 where
 instance Reg RegXMM where
     regClass = const RegXMM
 data MASMInclude = MASMInclude String | MASMIncludeLib String
-data MASMVarType = DB | DW | DD deriving Show
+data MASMVarType = DB | DW | DD
+instance Show MASMVarType where
+    show DB = "BYTE"
+    show DW = "WORD"
+    show DD = "DWORD"
+              
 type MASMVar = (MASMVarType, [Word8])
 type MASMVarMap = M.Map String MASMVar
 data CallingConvention = Default | Cdecl | FastCall | StdCall
