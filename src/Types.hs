@@ -71,7 +71,7 @@ data MASMInstr = MASMAdd Operand Operand
                | MASMGoto String
                | MASMLabel String
                | MASMComment String
-data FuncArg = forall a. Show Operand => FuncArg a
+type FuncArg = Operand
 data MASMFunc = MASMFunc { funcName :: String
                          , instrs :: [MASMInstr]
                          }
