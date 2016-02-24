@@ -29,7 +29,7 @@ main =
                                 loop (n - 1)
                               else
                                   return ()
-                 loop 100
+                 loop 20000
                  label "testLabel"
     in
       (mapM_ putStrLn) . output . snd . runWriter . produceAsm $ masm

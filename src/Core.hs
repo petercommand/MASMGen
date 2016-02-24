@@ -70,7 +70,7 @@ produceAsmProg prog = let finalProg = execState prog initProgState
                         section "DATA"
                         produceAsmGlobalVarMap $ globalVarMap finalProg
                         section "CODE"
-                        produceAsmFuncs $ funcs finalProg
+                        produceAsmFuncs $ reverse $ funcs finalProg
 
 produceAsmGlobalVarMap :: MASMVarMap -> Writer [MASMOutput] ()
 produceAsmGlobalVarMap varMap = let assocsList = M.assocs varMap
@@ -82,7 +82,7 @@ produceAsmFuncs :: [MASMTopLevel] -> Writer [MASMOutput] ()
 produceAsmFuncs (x:xs) = do
   case x of
     Func func -> let name = funcName func
-                     ins = instrs func
+                     ins = reverse $ instrs func
                  in do
                    stell $ MASMOutput $ name <> " PROC"
                    stell $ Indent
@@ -109,10 +109,11 @@ printShowableInstr instr = let binOp m x y = stell $ MASMOutput $ m <> " " <> sh
                                 MASMLabel x -> stell $ MASMOutputNoIndent $ x <> ":"
                                 MASMPush x -> sinOp "PUSH" x
                                 MASMPop x -> sinOp "POP" x
+                                MASMComment x -> stell $ MASMOutput $ ';' : x
 
 modFun :: MASMInstr -> MASMFuncM ()
 modFun x = modify (\f -> let i = instrs f
-                         in f { instrs = i <> [x] })
+                         in f { instrs = x : i })
 
 add :: Operand -> Operand -> MASMFuncM ()
 add x y = modFun $ MASMAdd x y
@@ -140,7 +141,10 @@ goto x = modFun $ MASMGoto x
 
 label :: String -> MASMFuncM ()
 label x = modFun $ MASMLabel x
-    
+
+comment :: String -> MASMFuncM ()
+comment x = modFun $ MASMComment x
+          
 stell :: (Monad m, Monoid (m a)) => a -> Writer (m a) ()
 stell = tell . return
 

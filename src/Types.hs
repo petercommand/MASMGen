@@ -70,6 +70,7 @@ data MASMInstr = MASMAdd Operand Operand
                | MASMFuncCall String CallingConvention [FuncArg]
                | MASMGoto String
                | MASMLabel String
+               | MASMComment String
 data FuncArg = forall a. Show Operand => FuncArg a
 data MASMFunc = MASMFunc { funcName :: String
                          , instrs :: [MASMInstr]
