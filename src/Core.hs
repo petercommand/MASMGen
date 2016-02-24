@@ -1,4 +1,3 @@
-{-# LANGUAGE MultiParamTypeClasses #-}
 module Core where
 import Types
 import qualified Data.Map as M
@@ -89,6 +88,7 @@ produceAsmFuncs (x:xs) = do
                    sequence_ $ map printShowableInstr ins
                    stell $ Dedent
                    stell $ MASMOutput $ name <> " ENDP"
+  stell $ NewLine
   produceAsmFuncs xs
 produceAsmFuncs [] = return ()
 
@@ -139,6 +139,12 @@ mov x y = modFun $ MASMMov x y
 goto :: String -> MASMFuncM ()
 goto x = modFun $ MASMGoto x
 
+push :: Operand -> MASMFuncM ()
+push x = modFun $ MASMPush x
+
+pop :: Operand -> MASMFuncM ()
+pop x = modFun $ MASMPop x
+         
 label :: String -> MASMFuncM ()
 label x = modFun $ MASMLabel x
 
