@@ -50,13 +50,13 @@ instance Show Operand where
     show (Imm x) = show x ++ "D"
     show (Direct addr) = show addr ++ "D" -- Decimal
     show (Reg reg) = show reg
-    show (RegIndirect reg) = "[ " ++ show reg ++ " ]"
-    show (RegIndex reg disp) = "[ " ++ show reg ++ " + " ++ show disp ++ " ]"
-    show (RegIndexScale baseReg indexReg scale disp) = "[ " ++ show baseReg
+    show (RegIndirect reg) = "[" ++ show reg ++ "]"
+    show (RegIndex reg disp) = "[" ++ show reg ++ " + " ++ show disp ++ "]"
+    show (RegIndexScale baseReg indexReg scale disp) = "[" ++ show baseReg
                                                        ++ " + " ++ show indexReg
                                                        ++ "*" ++ show scale
                                                        ++ " + " ++ show disp
-                                                       ++ " ]"
+                                                       ++ "]"
     show (VarAddr x) = "[ " ++ show x ++ " ]"
 data MASMMode = Mode386 | Mode486 | Mode586 | Mode686
 data Reg32 = EAX | EBX | ECX | EDX | ESI | EDI | ESP | EBP deriving Show
