@@ -21,6 +21,8 @@ data Lit = IntLit Word8 | Lits [Lit]
 type Addr = Word16
 type Scale = Int
 type Displacement = Int
+
+    
 data Operand where
     Imm :: Word16 -> Operand -- to be fixed
     Direct :: Addr -> Operand
@@ -28,13 +30,34 @@ data Operand where
     RegIndirect :: forall a. Reg a => a -> Operand
     RegIndex :: forall a. Reg a => a -> Displacement -> Operand
     RegIndexScale :: forall a. Reg a => a -> a -> Scale -> Displacement -> Operand
+    VarAddr :: String -> Operand
+
+data OpClass = Pointer | Register RegClass | Immediate
+               
+class OperandClass a where
+    operandClass :: a -> OpClass
+
+instance OperandClass Operand where
+    operandClass (Imm _) = Immediate
+    operandClass (Direct _) = Pointer
+    operandClass (Reg x) = Register (regClass x)
+    operandClass (RegIndirect _) = Pointer
+    operandClass (RegIndex _ _) = Pointer
+    operandClass (RegIndexScale _ _ _ _) = Pointer
+    operandClass (VarAddr _) = Pointer
+
 instance Show Operand where
     show (Imm x) = show x ++ "D"
     show (Direct addr) = show addr ++ "D" -- Decimal
     show (Reg reg) = show reg
     show (RegIndirect reg) = "[ " ++ show reg ++ " ]"
     show (RegIndex reg disp) = "[ " ++ show reg ++ " + " ++ show disp ++ " ]"
-    show (RegIndexScale baseReg indexReg scale disp) = "[ " ++ show baseReg ++ " + " ++ show indexReg ++ "*" ++ show scale ++ " + " ++ show disp ++ " ]" 
+    show (RegIndexScale baseReg indexReg scale disp) = "[ " ++ show baseReg
+                                                       ++ " + " ++ show indexReg
+                                                       ++ "*" ++ show scale
+                                                       ++ " + " ++ show disp
+                                                       ++ " ]"
+    show (VarAddr x) = "[ " ++ show x ++ " ]"
 data MASMMode = Mode386 | Mode486 | Mode586 | Mode686
 data Reg32 = EAX | EBX | ECX | EDX | ESI | EDI | ESP | EBP deriving Show
 data Reg16 = AX | BX | CX | DX | SI | DI | SP | BP deriving Show
