@@ -152,7 +152,22 @@ dec x = modFun $ MASMDec Nothing x
 
 mov :: Operand -> Operand -> MASMFuncM ()
 mov x y = modFun $ MASMMov Nothing x y
-        
+
+-- Do not pass the arg 'ty' pointer types, it is designed to use with DB / DW / DD
+internalMov :: MASMType -> Operand -> Operand -> MASMFuncM ()
+internalMov ty x y = case operandClass x of
+                       Pointer -> modFun $ MASMMov (Just (Ptr ty)) x y
+                       _ -> modFun $ MASMMov (Just ty) x y
+                       
+movb :: Operand -> Operand -> MASMFuncM ()
+movb = internalMov DB
+
+movw :: Operand -> Operand -> MASMFuncM ()
+movw = internalMov DW
+
+movl :: Operand -> Operand -> MASMFuncM ()
+movl = internalMov DD
+
 goto :: String -> MASMFuncM ()
 goto x = modFun $ MASMGoto x
 
