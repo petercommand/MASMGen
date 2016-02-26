@@ -138,6 +138,16 @@ addl x y = modFun $ MASMAdd (Just DD) x y
 sub :: Operand -> Operand -> MASMFuncM ()
 sub x y = modFun $ MASMSub Nothing x y
 
+subb :: Operand -> Operand -> MASMFuncM ()
+subb x y = modFun $ MASMSub (Just DB) x y
+
+subw :: Operand -> Operand -> MASMFuncM ()
+subw x y = modFun $ MASMSub (Just DW) x y
+
+subl :: Operand -> Operand -> MASMFuncM ()
+subl x y = modFun $ MASMSub (Just DD) x y
+
+           
 imul :: Operand -> Operand -> MASMFuncM ()
 imul x y = modFun $ MASMMul Nothing x y
            
