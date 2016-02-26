@@ -20,6 +20,7 @@ main =
         prog = do
           mkFunc "start" $ do
                  mov (Reg AX) (Imm 0)
+                 movl (RegIndirect AX) (Imm 0)
                  addl (Reg AX) (Imm 10)
                  sub (Reg AX) (Imm 100)
           mkFunc "testFunc1" $ do
