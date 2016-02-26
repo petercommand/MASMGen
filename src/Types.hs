@@ -54,24 +54,29 @@ instance Reg Reg8 where
 instance Reg RegXMM where
     regClass = const RegXMM
 data MASMInclude = MASMInclude String | MASMIncludeLib String
-data MASMVarType = DB | DW | DD
-instance Show MASMVarType where
+data MASMType where
+    DB :: MASMType
+    DW :: MASMType
+    DD :: MASMType
+    Ptr :: MASMType -> MASMType
+instance Show MASMType where
     show DB = "BYTE"
     show DW = "WORD"
     show DD = "DWORD"
+    show (Ptr x) = show x ++ " PTR"
               
-type MASMVar = (MASMVarType, [Word8])
+type MASMVar = (MASMType, [Word8])
 type MASMVarMap = M.Map String MASMVar
 data CallingConvention = Default | Cdecl | FastCall | StdCall
-data MASMInstr = MASMAdd Operand Operand
-               | MASMSub Operand Operand
-               | MASMMul Operand Operand
-               | MASMDiv Operand Operand
-               | MASMMov Operand Operand
-               | MASMInc Operand
-               | MASMDec Operand
-               | MASMPush Operand
-               | MASMPop Operand
+data MASMInstr = MASMAdd (Maybe MASMType) Operand Operand
+               | MASMSub (Maybe MASMType) Operand Operand
+               | MASMMul (Maybe MASMType) Operand Operand
+               | MASMDiv (Maybe MASMType) Operand Operand
+               | MASMMov (Maybe MASMType) Operand Operand
+               | MASMInc (Maybe MASMType) Operand
+               | MASMDec (Maybe MASMType) Operand
+               | MASMPush (Maybe MASMType) Operand
+               | MASMPop (Maybe MASMType) Operand
                | MASMFuncCall String CallingConvention [FuncArg]
                | MASMGoto String
                | MASMLabel String

@@ -73,7 +73,7 @@ produceAsmProg prog = let finalProg = execState prog initProgState
 
 produceAsmGlobalVarMap :: MASMVarMap -> Writer [MASMOutput] ()
 produceAsmGlobalVarMap varMap = let assocsList = M.assocs varMap
-                                    printVar :: (String, (MASMVarType, [Word8])) -> Writer [MASMOutput] ()
+                                    printVar :: (String, (MASMType, [Word8])) -> Writer [MASMOutput] ()
                                     printVar (name, (varType, val)) = stell $ MASMOutput $ name <> " " <> show varType <> " " <> intersperse ',' (concat . map show $ val)
                                 in do
                                   sequence_ $ map printVar assocsList
@@ -95,20 +95,28 @@ produceAsmFuncs [] = return ()
 
 printShowableInstr :: MASMInstr -> Writer [MASMOutput] ()
 printShowableInstr instr = let binOp m x y = stell $ MASMOutput $ m <> " " <> show x <> ", " <> show y
+                               sizedBinOp m size x y = case size of
+                                                         Just size -> stell $ MASMOutput $ m <> " " <> show size <> " " <> show x <> ", " <> show y
+                                                         Nothing -> binOp m x y
+                                                                      
                                sinOp m x = stell $ MASMOutput $ m <> " " <> show x
+                               sizedSinOp m size x = case size of
+                                                       Just size -> stell $ MASMOutput $ m <> " " <> show size <> " " <> show x
+                                                       Nothing -> sinOp m x
+                                           
                            in case instr of
-                                MASMAdd x y -> binOp "ADD" x y
-                                MASMSub x y -> binOp "SUB" x y
-                                MASMMul x y -> binOp "IMUL" x y
-                                MASMDiv x y -> binOp "IDIV" x y
-                                MASMInc x -> sinOp "INC" x
-                                MASMDec x -> sinOp "DEC" x
-                                MASMMov x y -> binOp "MOV" x y
+                                MASMAdd size x y -> sizedBinOp "ADD" size x y
+                                MASMSub size x y -> sizedBinOp "SUB" size x y
+                                MASMMul size x y -> sizedBinOp "IMUL" size x y
+                                MASMDiv size x y -> sizedBinOp "IDIV" size x y
+                                MASMInc size x -> sizedSinOp "INC" size x
+                                MASMDec size x -> sizedSinOp "DEC" size x
+                                MASMMov size x y -> sizedBinOp "MOV" size x y
                                 MASMFuncCall name convention _ -> error "func call not implemented"
                                 MASMGoto x -> sinOp "GOTO" x
                                 MASMLabel x -> stell $ MASMOutputNoIndent $ x <> ":"
-                                MASMPush x -> sinOp "PUSH" x
-                                MASMPop x -> sinOp "POP" x
+                                MASMPush size x -> sizedSinOp "PUSH" size x
+                                MASMPop size x -> sizedSinOp "POP" size x
                                 MASMComment x -> stell $ MASMOutput $ ';' : x
 
 modFun :: MASMInstr -> MASMFuncM ()
@@ -116,34 +124,43 @@ modFun x = modify (\f -> let i = instrs f
                          in f { instrs = x : i })
 
 add :: Operand -> Operand -> MASMFuncM ()
-add x y = modFun $ MASMAdd x y
+add x y = modFun $ MASMAdd Nothing x y
 
+addb :: Operand -> Operand -> MASMFuncM ()
+addb x y = modFun $ MASMAdd (Just DB) x y
+
+addw :: Operand -> Operand -> MASMFuncM ()
+addw x y = modFun $ MASMAdd (Just DW) x y
+
+addl :: Operand -> Operand -> MASMFuncM ()
+addl x y = modFun $ MASMAdd (Just DD) x y
+          
 sub :: Operand -> Operand -> MASMFuncM ()
-sub x y = modFun $ MASMSub x y
+sub x y = modFun $ MASMSub Nothing x y
 
 imul :: Operand -> Operand -> MASMFuncM ()
-imul x y = modFun $ MASMMul x y
+imul x y = modFun $ MASMMul Nothing x y
            
 idiv :: Operand -> Operand -> MASMFuncM ()
-idiv x y = modFun $ MASMDiv x y
+idiv x y = modFun $ MASMDiv Nothing x y
            
 inc :: Operand -> MASMFuncM ()
-inc x = modFun $ MASMInc x
+inc x = modFun $ MASMInc Nothing x
 
 dec :: Operand -> MASMFuncM ()
-dec x = modFun $ MASMDec x
+dec x = modFun $ MASMDec Nothing x
 
 mov :: Operand -> Operand -> MASMFuncM ()
-mov x y = modFun $ MASMMov x y
+mov x y = modFun $ MASMMov Nothing x y
         
 goto :: String -> MASMFuncM ()
 goto x = modFun $ MASMGoto x
 
 push :: Operand -> MASMFuncM ()
-push x = modFun $ MASMPush x
+push x = modFun $ MASMPush Nothing x
 
 pop :: Operand -> MASMFuncM ()
-pop x = modFun $ MASMPop x
+pop x = modFun $ MASMPop Nothing x
          
 label :: String -> MASMFuncM ()
 label x = modFun $ MASMLabel x

@@ -20,12 +20,12 @@ main =
         prog = do
           mkFunc "start" $ do
                  mov (Reg AX) (Imm 0)
-                 add (Reg AX) (Imm 10)
+                 addl (Reg AX) (Imm 10)
                  sub (Reg AX) (Imm 100)
           mkFunc "testFunc1" $ do
                  let loop n = if n > 0
                               then do
-                                mov (Reg EAX) (Imm n)
+                                mov (Reg EAX) (Imm $ n * n)
                                 loop (n - 1)
                               else
                                   return ()
