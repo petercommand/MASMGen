@@ -7,7 +7,44 @@ Maintainer  : petercommand@gmail.com
 Stability   : provisional
 Portability : portable
 -}
-module Language.MASMGen.Core where
+module Language.MASMGen.Core ( mkFunc
+                             , initFuncState
+                             , initProgState
+                             , section
+                             , output
+                             , produceAsm
+                             , producdeAsmOptions
+                             , produceAsmInclude
+                             , produceAsmProg
+                             , produceAsmGlobalVarMap
+                             , produceAsmFuncs
+                             , printShowableInstr
+                             , add
+                             , addb
+                             , addw
+                             , addl
+                             , sub
+                             , subb
+                             , subw
+                             , subl
+                             , imul
+                             , idiv
+                             , inc
+                             , dec
+                             , mov
+                             , movb
+                             , movw
+                             , movl
+                             , goto
+                             , push
+                             , pushl
+                             , pop
+                             , popl
+                             , label
+                             , comment
+                             )
+
+                                   where
 import Language.MASMGen.Types
 import qualified Data.Map as M
 import Control.Monad.State.Lazy
