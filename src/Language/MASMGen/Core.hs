@@ -13,7 +13,7 @@ module Language.MASMGen.Core ( mkFunc
                              , section
                              , output
                              , produceAsm
-                             , producdeAsmOptions
+                             , produceAsmOptions
                              , produceAsmInclude
                              , produceAsmProg
                              , produceAsmGlobalVarMap
