@@ -57,7 +57,7 @@ instance Show Operand where
                                                        ++ "*" ++ show scale
                                                        ++ " + " ++ show disp
                                                        ++ "]"
-    show (VarAddr x) = "[ " ++ show x ++ " ]"
+    show (VarAddr x) = "[" ++ show x ++ "]"
 data MASMMode = Mode386 | Mode486 | Mode586 | Mode686
 data Reg32 = EAX | EBX | ECX | EDX | ESI | EDI | ESP | EBP deriving Show
 data Reg16 = AX | BX | CX | DX | SI | DI | SP | BP deriving Show
