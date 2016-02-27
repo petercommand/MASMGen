@@ -117,3 +117,9 @@ data MASMProg = MASMProg { globalVarMap :: MASMVarMap
                          }
 
 data MASMOutput = MASMOutput String | MASMOutputNoIndent String | Indent | Dedent | NewLine
+
+type UntypedMASMInstrSinCon = (Operand -> MASMInstr)
+type UntypedMASMInstrBinCon = (Operand -> Operand -> MASMInstr)
+type TypedMASMInstrSinCon = (Maybe MASMType) -> Operand -> MASMInstr
+type TypedMASMInstrBinCon = (Maybe MASMType) -> Operand -> Operand -> MASMInstr
+    

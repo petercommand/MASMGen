@@ -164,12 +164,12 @@ mov :: Operand -> Operand -> MASMFuncM ()
 mov x y = modFun $ MASMMov Nothing x y
 
 -- Do not pass the arg 'ty' pointer types, it is designed to use with DB / DW / DD
-typedSinOp :: ((Maybe MASMType) -> Operand -> MASMInstr) -> MASMType -> Operand -> MASMFuncM ()
+typedSinOp :: TypedMASMInstrSinCon -> MASMType -> Operand -> MASMFuncM ()
 typedSinOp instr ty x = case operandClass x of
                           Pointer -> modFun $ instr (Just (Ptr ty)) x
                           _ -> modFun $ instr (Just ty) x
 
-typedBinOp :: ((Maybe MASMType) -> Operand -> Operand -> MASMInstr) -> MASMType -> Operand -> Operand -> MASMFuncM ()
+typedBinOp :: TypedMASMInstrBinCon -> MASMType -> Operand -> Operand -> MASMFuncM ()
 typedBinOp instr ty x y = case operandClass x of
                        Pointer -> modFun $ instr (Just (Ptr ty)) x y
                        _ -> modFun $ instr (Just ty) x y
