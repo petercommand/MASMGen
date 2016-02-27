@@ -18,7 +18,6 @@ executable MASMGen
   build-depends:       base
                      , containers >=0.5
                      , mtl >=2.2
-                     , word8
   default-language:    Haskell2010
 
 
