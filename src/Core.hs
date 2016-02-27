@@ -164,19 +164,24 @@ mov :: Operand -> Operand -> MASMFuncM ()
 mov x y = modFun $ MASMMov Nothing x y
 
 -- Do not pass the arg 'ty' pointer types, it is designed to use with DB / DW / DD
-internalMov :: MASMType -> Operand -> Operand -> MASMFuncM ()
-internalMov ty x y = case operandClass x of
-                       Pointer -> modFun $ MASMMov (Just (Ptr ty)) x y
+typedSinOp :: MASMType -> Operand -> MASMFuncM ()
+typedSinOp instr ty x = case operandClass x of
+                          Pointer -> modFun $ instr (Just (Ptr ty)) x
+                          _ -> modFun $ MASMMov (Just ty) x
+
+typedBinOp :: MASMType -> Operand -> Operand -> MASMFuncM ()
+typedBinOp instr ty x y = case operandClass x of
+                       Pointer -> modFun $ instr (Just (Ptr ty)) x y
                        _ -> modFun $ MASMMov (Just ty) x y
                        
 movb :: Operand -> Operand -> MASMFuncM ()
-movb = internalMov DB
+movb = typedBinOp MASMMov DB
 
 movw :: Operand -> Operand -> MASMFuncM ()
-movw = internalMov DW
+movw = typedBinOp MASMMov DW
 
 movl :: Operand -> Operand -> MASMFuncM ()
-movl = internalMov DD
+movl = typedBinOp MASMMov DD
 
 goto :: String -> MASMFuncM ()
 goto x = modFun $ MASMGoto x
@@ -184,9 +189,16 @@ goto x = modFun $ MASMGoto x
 push :: Operand -> MASMFuncM ()
 push x = modFun $ MASMPush Nothing x
 
+pushl :: Operand -> MASMFuncM ()
+pushl x = typedSinOp MASMPush DD
+         
 pop :: Operand -> MASMFuncM ()
 pop x = modFun $ MASMPop Nothing x
-         
+
+popl :: Operand -> MASMFuncM ()
+popl x = typedSinOp MASMPop DD
+
+        
 label :: String -> MASMFuncM ()
 label x = modFun $ MASMLabel x
 
