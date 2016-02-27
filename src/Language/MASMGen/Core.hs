@@ -1,3 +1,12 @@
+{-|
+Module      : Language.MASMGen.Core
+Description : Provides the core functions of the library
+Copyright   : (c) Ruey-Lin Hsu (petercommand)
+License     : LGPL-3
+Maintainer  : petercommand@gmail.com
+Stability   : provisional
+Portability : portable
+-}
 module Language.MASMGen.Core where
 import Language.MASMGen.Types
 import qualified Data.Map as M

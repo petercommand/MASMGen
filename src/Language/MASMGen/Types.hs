@@ -1,3 +1,12 @@
+{-|
+Module      : Language.MASMGen.Types
+Description : Provides the data types used by the library
+Copyright   : (c) Ruey-Lin Hsu (petercommand)
+License     : LGPL-3
+Maintainer  : petercommand@gmail.com
+Stability   : provisional
+Portability : portable
+-}
 {-# LANGUAGE GADTs, ExistentialQuantification, FlexibleContexts, StandaloneDeriving #-}
 module Language.MASMGen.Types where
 import qualified Data.Map as M
