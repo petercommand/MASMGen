@@ -1,7 +1,7 @@
 module Main where
 
-import Core
-import Types
+import Language.MASMGen.Core
+import Language.MASMGen.Types
 import Control.Monad.Writer.Lazy
     
 main :: IO ()

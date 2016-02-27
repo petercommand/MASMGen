@@ -1,5 +1,5 @@
 {-# LANGUAGE GADTs, ExistentialQuantification, FlexibleContexts, StandaloneDeriving #-}
-module Types where
+module Language.MASMGen.Types where
 import qualified Data.Map as M
 import Data.Word
 import Control.Monad.State.Lazy

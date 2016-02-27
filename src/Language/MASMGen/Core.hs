@@ -1,5 +1,5 @@
-module Core where
-import Types
+module Language.MASMGen.Core where
+import Language.MASMGen.Types
 import qualified Data.Map as M
 import Control.Monad.State.Lazy
 import Control.Monad.Writer.Lazy
