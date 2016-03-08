@@ -8,7 +8,45 @@ Stability   : provisional
 Portability : portable
 -}
 {-# LANGUAGE GADTs, ExistentialQuantification, FlexibleContexts, StandaloneDeriving #-}
-module Language.MASMGen.Types where
+module Language.MASMGen.Types ( MASM(..)
+                              , Lit(..)
+                              , Var
+                              , Addr
+                              , Scale
+                              , Displacement
+                              , mkVar
+                              , Operand(..)
+                              , OpClass(..)
+                              , MASMMode(..)
+                              , Reg32(..)
+                              , Reg16(..)
+                              , Reg8(..)
+                              , RegXMM(..)
+                              , RegClass(..)
+                              , MASMInclude(..)
+                              , MASMType(..)
+                              , MASMVar
+                              , MASMVarMap
+                              , CallingConvention(..)
+                              , MASMInstr(..)
+                              , FuncArg
+                              , MASMFunc(..)
+                              , MASMFuncM
+                              , MASMProgM
+                              , MASMTopLevel(..)
+                              , MASMProg(..)
+                              , MASMOutput(..)
+                              , UntypedMASMInstrSinCon
+                              , UntypedMASMInstrBinCon
+                              , TypedMASMInstrSinCon
+                              , TypedMASMInstrBinCon
+                              , operandClass
+                              , def
+                              , showReg
+                              , regClass
+                              )
+
+                               where
 import qualified Data.Map as M
 import Data.Word
 import Control.Monad.State.Lazy
@@ -26,20 +64,36 @@ instance Def MASM where
                , masmProg = return ()
                }
 
-data Lit = IntLit Word8 | Lits [Lit]
+data Lit = Lit8 Word8 | Lit16 Word16 | Lit32 Word32
+instance Show Lit where
+    show (Lit8 x) = show x
+    show (Lit16 x) = show x
+    show (Lit32 x) = show x
+
 type Addr = Word16
 type Scale = Int
 type Displacement = Int
 
+data Var = Var { varName :: String
+               , varType :: MASMType
+               }
+
+instance Show Var where
+    show = varName
+
+mkVar :: String -> MASMType -> Var
+mkVar name var = Var { varName = name
+                     , varType = var
+                     }
     
 data Operand where
-    Imm :: Word16 -> Operand -- to be fixed
+    Imm :: Word32 -> Operand -- to be fixed
     Direct :: Addr -> Operand
     Reg :: forall a. Reg a => a -> Operand
     RegIndirect :: forall a. Reg a => a -> Operand
     RegIndex :: forall a. Reg a => a -> Displacement -> Operand
     RegIndexScale :: forall a. Reg a => a -> a -> Scale -> Displacement -> Operand
-    VarAddr :: String -> Operand
+    VarAddr :: Var -> Operand
 
 data OpClass = Pointer | Register RegClass | Immediate
                
@@ -96,8 +150,8 @@ instance Show MASMType where
     show DW = "WORD"
     show DD = "DWORD"
     show (Ptr x) = show x ++ " PTR"
-              
-type MASMVar = (MASMType, [Word8])
+
+type MASMVar = (MASMType, Maybe [Lit])
 type MASMVarMap = M.Map String MASMVar
 data CallingConvention = Default | Cdecl | FastCall | StdCall
 data MASMInstr = MASMAdd (Maybe MASMType) Operand Operand

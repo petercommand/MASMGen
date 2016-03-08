@@ -18,11 +18,13 @@ main =
                    , masmProg = prog
                    }
         prog = do
+          var1 <- newGlobalVar "Var1" (DW, Nothing)
           mkFunc "start" $ do
                  mov (Reg AX) (Imm 0)
                  movl (RegIndirect EAX) (Reg EBX)
                  addw (Reg AX) (Imm 10)
                  sub (Reg AX) (Imm 100)
+                 movw (Reg AX) (VarAddr var1)
           mkFunc "testFunc1" $ do
                  let loop n = if n > 0
                               then do

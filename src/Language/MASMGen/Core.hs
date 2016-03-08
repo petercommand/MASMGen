@@ -6,8 +6,9 @@ License     : LGPL-3
 Maintainer  : petercommand@gmail.com
 Stability   : provisional
 Portability : portable
--}
-module Language.MASMGen.Core ( mkFunc
+|-}
+module Language.MASMGen.Core ( newGlobalVar
+                             , mkFunc
                              , initFuncState
                              , initProgState
                              , section
@@ -53,11 +54,17 @@ import Control.Monad.Writer.Lazy
 import Data.List
 import Data.Word
 
+
 mkFunc :: String -> MASMFuncM () -> MASMProgM ()
 mkFunc name thisFunc = do
   f <- gets funcs
   modify $ \s -> s { funcs = Func (execState thisFunc (initFuncState name)) : f }
 
+newGlobalVar :: String -> MASMVar -> MASMProgM Var
+newGlobalVar name value = do
+  map <- gets globalVarMap
+  modify $ \s -> s { globalVarMap = M.insert name value map }  
+  return $ mkVar name (fst value)
 
 
 initFuncState :: String -> MASMFunc
@@ -119,8 +126,13 @@ produceAsmProg prog = let finalProg = execState prog initProgState
 
 produceAsmGlobalVarMap :: MASMVarMap -> Writer [MASMOutput] ()
 produceAsmGlobalVarMap varMap = let assocsList = M.assocs varMap
-                                    printVar :: (String, (MASMType, [Word8])) -> Writer [MASMOutput] ()
-                                    printVar (name, (varType, val)) = stell $ MASMOutput $ name <> " " <> show varType <> " " <> intersperse ',' (concat . map show $ val)
+                                    printVar :: (String, (MASMType, Maybe [Lit])) -> Writer [MASMOutput] ()
+                                    printVar (name, (varType, val)) =
+                                        let result = case val of
+                                                       Just x -> intersperse ',' (concat . map show $ x)
+                                                       Nothing -> "?"
+                                        in
+                                          stell $ MASMOutput $ name <> " " <> show varType <> " " <> result
                                 in do
                                   sequence_ $ map printVar assocsList
 produceAsmFuncs :: [MASMTopLevel] -> Writer [MASMOutput] ()
@@ -217,8 +229,8 @@ typedSinOp instr ty x = case operandClass x of
 
 typedBinOp :: TypedMASMInstrBinCon -> MASMType -> Operand -> Operand -> MASMFuncM ()
 typedBinOp instr ty x y = case operandClass x of
-                       Pointer -> modFun $ instr (Just (Ptr ty)) x y
-                       _ -> modFun $ instr (Just ty) x y
+                            Pointer -> modFun $ instr (Just (Ptr ty)) x y
+                            _ -> modFun $ instr (Just ty) x y
                        
 movb :: Operand -> Operand -> MASMFuncM ()
 movb = typedBinOp MASMMov DB
