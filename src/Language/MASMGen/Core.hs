@@ -41,6 +41,11 @@ module Language.MASMGen.Core ( newGlobalVar
                              , pushl
                              , pop
                              , popl
+                             , shl
+                             , sal
+                             , shr
+                             , sar
+                             , lea
                              , label
                              , comment
                              )
@@ -170,11 +175,18 @@ printShowableInstr instr = let binOp m x y = stell $ MASMOutput $ m <> " " <> sh
                                 MASMInc size x -> sizedSinOp "INC" size x
                                 MASMDec size x -> sizedSinOp "DEC" size x
                                 MASMMov size x y -> sizedBinOp "MOV" size x y
+                                MASMMovsx x y -> binOp "MOVSX" x y
+                                MASMMovzx x y -> binOp "MOVZX" x y
                                 MASMFuncCall name convention _ -> error "func call not implemented"
                                 MASMGoto x -> sinOp "GOTO" x
                                 MASMLabel x -> stell $ MASMOutputNoIndent $ x <> ":"
                                 MASMPush size x -> sizedSinOp "PUSH" size x
                                 MASMPop size x -> sizedSinOp "POP" size x
+                                MASMShl x y -> binOp "SHL" x y
+                                MASMSal x y -> binOp "SAL" x y
+                                MASMShr x y -> binOp "SHR" x y
+                                MASMSar x y -> binOp "SAR" x y
+                                MASMLea x y -> binOp "LEA" x y
                                 MASMComment x -> stell $ MASMOutput $ ';' : x
 
 modFun :: MASMInstr -> MASMFuncM ()
@@ -241,6 +253,12 @@ movw = typedBinOp MASMMov DW
 movl :: Operand -> Operand -> MASMFuncM ()
 movl = typedBinOp MASMMov DD
 
+movsx :: Operand -> Operand -> MASMFuncM ()
+movsx x y = modFun $ MASMMovsx x y
+
+movzx :: Operand -> Operand -> MASMFuncM ()
+movzx x y = modFun $ MASMMovzx x y
+       
 goto :: String -> MASMFuncM ()
 goto x = modFun $ MASMGoto x
 
@@ -256,7 +274,21 @@ pop x = modFun $ MASMPop Nothing x
 popl :: Operand -> MASMFuncM ()
 popl x = typedSinOp MASMPop DD x
 
+shl :: Operand -> Operand -> MASMFuncM ()
+shl dest count = modFun $ MASMShl dest count
+
+sal :: Operand -> Operand -> MASMFuncM ()
+sal dest count = modFun $ MASMSal dest count
+                 
+shr :: Operand -> Operand -> MASMFuncM ()
+shr dest count = modFun $ MASMShr dest count
+
+sar :: Operand -> Operand -> MASMFuncM ()
+sar dest count = modFun $ MASMSar dest count
         
+lea :: Operand -> Operand -> MASMFuncM ()
+lea x y = modFun $ MASMLea x y
+
 label :: String -> MASMFuncM ()
 label x = modFun $ MASMLabel x
 

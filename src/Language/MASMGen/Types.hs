@@ -69,7 +69,8 @@ instance Show Lit where
     show (Lit8 x) = show x
     show (Lit16 x) = show x
     show (Lit32 x) = show x
-
+                     
+                     
 type Addr = Word16
 type Scale = Int
 type Displacement = Int
@@ -159,10 +160,17 @@ data MASMInstr = MASMAdd (Maybe MASMType) Operand Operand
                | MASMMul (Maybe MASMType) Operand Operand
                | MASMDiv (Maybe MASMType) Operand Operand
                | MASMMov (Maybe MASMType) Operand Operand
+               | MASMMovsx Operand Operand
+               | MASMMovzx Operand Operand
                | MASMInc (Maybe MASMType) Operand
                | MASMDec (Maybe MASMType) Operand
                | MASMPush (Maybe MASMType) Operand
                | MASMPop (Maybe MASMType) Operand
+               | MASMShl Operand Operand
+               | MASMSal Operand Operand
+               | MASMShr Operand Operand
+               | MASMSar Operand Operand
+               | MASMLea Operand Operand
                | MASMFuncCall String CallingConvention [FuncArg]
                | MASMGoto String
                | MASMLabel String
