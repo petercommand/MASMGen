@@ -1,5 +1,5 @@
 name:                MASMGen
-version:             0.5.0.0
+version:             0.7.0.0
 synopsis:            Generate MASM code from haskell
 description:         Please see README.md
 license:             LGPL-3
